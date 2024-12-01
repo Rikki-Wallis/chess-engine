@@ -1,4 +1,4 @@
-from piece import Piece
+from src.piece import Piece
 
 class Pawn(Piece):
     

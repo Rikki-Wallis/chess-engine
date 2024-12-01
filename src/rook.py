@@ -1,3 +1,4 @@
+from constants import WHITE_ROOK, BLACK_ROOK
 from piece import Piece
 import copy
 
@@ -14,9 +15,10 @@ class Rook(Piece):
         name (string) - The name of the piece
     """
     def __init__(self, colour, name):
-        Piece.__init__(colour, name)
+        Piece.__init__(self, colour, name)
         self.moved = False
         self.value = 5
+        self.type = WHITE_ROOK if colour == 'w' else BLACK_ROOK
 
     """
     Method which finds all the available moves that the rook can make in a given position.

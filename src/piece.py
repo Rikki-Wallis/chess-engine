@@ -16,6 +16,7 @@ class Piece(ABC):
         self.color = colour
         self.name = name
         self.position = None
+        self.type = None
     
     """
     Abstract method which when implemented will return
