@@ -10,21 +10,21 @@ Class which handles all the GUI elements of the chess program.
 """
 class GUI():
     
-    """
-    Init method of the class initialising the screen and loads the asset list
-    """
     def __init__(self):
+        """
+        Init method of the class initialising the screen and loads the asset list
+        """
         self.assetList = self.importGraphics()
         self.initScreen()
         
-    """
-    Method which loads all of the piece assets and saves them into a dictionary
-    
-    returns:
-        assetDict (Dictionary) - A dictionary with key, value pairs which allows an asset
-                                 to be loaded given a piece type.
-    """
     def importGraphics(self):
+        """
+        Method which loads all of the piece assets and saves them into a dictionary
+        
+        returns:
+            assetDict (Dictionary) - A dictionary with key, value pairs which allows an asset
+                                    to be loaded given a piece type.
+        """
         # Importing Assests
         blackKing = pygame.image.load('C:\\Users\\rikki\\Desktop\\Personal Projects\\DGT Board\\Chess Assets\\Black King.png')
         blackQueen = pygame.image.load('C:\\Users\\rikki\\Desktop\\Personal Projects\\DGT Board\\Chess Assets\\Black Queen.png')
@@ -58,10 +58,10 @@ class GUI():
         # Returning the asset dictionary
         return assetDict
             
-    """
-    A method which initialises the pygame window and sets it to be adjustable.
-    """
     def initScreen(self):
+        """
+        A method which initialises the pygame window and sets it to be adjustable.
+        """
         # Initialising pygame
         pygame.init()
 
@@ -71,17 +71,14 @@ class GUI():
         
         # Initialising the screen
         self.screen = pygame.display.set_mode((screenWidth, screenHeight),pygame.RESIZABLE)
-        
-        # Maximizing the window
-        Window.from_display_module().maximize()
     
-    """
-    A method which calculates the square size of each tile given the current screen size
-    
-    returns:
-        squareSize (int) - The width of each tile dependent on the screen size
-    """
     def getSquareSize(self):
+        """
+        A method which calculates the square size of each tile given the current screen size
+        
+        returns:
+            squareSize (int) - The width of each tile dependent on the screen size
+        """
         # Getting Screen Size
         screenSize = self.screen.get_size()
         
@@ -95,10 +92,10 @@ class GUI():
         # Returning square size
         return math.floor(width/8)
     
-    """
-    A method which draws the chess board and refreshes the screen
-    """
     def drawBoard(self):
+        """
+        A method which draws the chess board and refreshes the screen
+        """
         # Getting the current square size depending on the width and hieght of the screen
         squareSize = self.getSquareSize()
         
@@ -121,14 +118,14 @@ class GUI():
         # Refreshing screen
         pygame.display.update()
     
-    """
-    A method similar to drawBoard however this method specifically focuses on drawing
-    the piece assets to the screen corresponding to where the pieces are on the board.
-    
-    params:
-        board (List[List[Tile]]) - The current board that the game is being played on
-    """
     def drawPieces(self, board):
+        """
+        A method similar to drawBoard however this method specifically focuses on drawing
+        the piece assets to the screen corresponding to where the pieces are on the board.
+        
+        params:
+            board (List[List[Tile]]) - The current board that the game is being played on
+        """
         # Getting the square size
         squareSize = self.getSquareSize()
         
@@ -164,3 +161,40 @@ class GUI():
                     
         # Refreshing screen
         pygame.display.update()
+    
+    def drawLegalMoves(self, legalMoves):
+        # Getting the square size
+        squareSize = self.getSquareSize()
+        
+        # Iterating over each row
+        for rowIndex, row in enumerate(legalMoves):
+            
+            # Iterating over each tile
+            for collumnIndex, tile in enumerate(row):
+                
+                # If the tile should be displayed colour in the square
+                if tile.movable or tile.takeable or tile.check:
+                    
+                    # Obtaining the transparent surface
+                    transparentSurface = self.drawTransparentRectangle()
+                    
+                    # Getting the coordinates for the blit
+                    x, y = collumnIndex*squareSize, rowIndex*squareSize
+                    
+                    # Blitting the square onto the screen
+                    self.screen.blit(transparentSurface, (x,y))
+                    
+        # Refreshing screen
+        pygame.display.update()
+                    
+    def drawTransparentRectangle(self):
+        # Get the size of each square
+        squareSize = self.getSquareSize()
+        
+        # Create a transparent surface for the rectangle
+        transparentSurface = pygame.Surface((squareSize,squareSize), pygame.SRCALPHA)  # Enable alpha channel
+        transparentSurface.fill(RED_30_PERCENT_TRANSPARENCY)  # White color with 50% transparency
+        
+        # Returning the transparent surface
+        return transparentSurface
+        
