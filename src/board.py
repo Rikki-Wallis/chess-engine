@@ -1,3 +1,4 @@
+import copy
 from rook import Rook
 from tile import Tile
 import numpy as np
@@ -7,10 +8,10 @@ Class which defines how the chess board behaves in the program
 """
 class Board():
     
-    """
-    The classes init method which initialises an np.array representing each tile on the board
-    """
     def __init__(self):
+        """
+        The classes init method which initialises an np.array representing each tile on the board
+        """
         self.board = np.array([
                                 [Tile("a8", (0,0)), Tile("b8", (0,1)), Tile("c8", (0,2)), Tile("d8", (0,3)), Tile("e8", (0,4)), Tile("f8", (0,5)), Tile("g8", (0,6)), Tile("h8", (0,7))],
                                 [Tile("a7", (1,0)), Tile("b7", (1,1)), Tile("c7", (1,2)), Tile("d7", (1,3)), Tile("e7", (1,4)), Tile("f7", (1,5)), Tile("g7", (1,6)), Tile("h7", (1,7))],
@@ -21,10 +22,51 @@ class Board():
                                 [Tile("a2", (6,0)), Tile("b2", (6,1)), Tile("c2", (6,2)), Tile("d2", (6,3)), Tile("e2", (6,4)), Tile("f2", (6,5)), Tile("g2", (6,6)), Tile("h2", (6,7))],
                                 [Tile("a1", (7,0)), Tile("b1", (7,1)), Tile("c1", (7,2)), Tile("d1", (7,3)), Tile("e1", (7,4)), Tile("f1", (7,5)), Tile("g1", (7,6)), Tile("h1", (7,7))],
                               ])
+        
     
-    """
-    A method which sets up the starting position of the black and white pieces in a 
-    classic game of chess.
-    """
     def setupStartingPosition(self):
-        self.board[0,0].addPiece(Rook('b', "aRook"))
+        """
+        A method which sets up the starting position of the black and white pieces in a 
+        classic game of chess.
+        """
+        # Creating all the pieces on the board
+        bARook = Rook('b', "aRook")
+        bHRook = Rook('b', "hRook")
+        wARook = Rook('w', "aRook")
+        wHRook = Rook('w', "hRook")
+        
+        # Adding all the pieces to a list
+        blackPieceList = [bARook, bHRook]
+        whitePieceList = [wARook, wHRook]
+        
+        # Adding the pieces to the board and to the piece dictionary
+        self.board[0,0].addPiece(bARook)
+        self.board[0,7].addPiece(bHRook)
+        
+        self.board[6,3].addPiece(wARook)
+        self.board[7,7].addPiece(wHRook)
+        
+        # Adding the piece lists to the dictionary
+        self.piecesDictionary = {
+            'w' : whitePieceList,
+            'b' : blackPieceList
+        }
+        
+    def getTemporaryColourBoard(self, colour):
+        # Getting a deepcopy of the current board
+        tempColourBoard = copy.deepcopy(self.board)
+        
+        # Getting the opposite colour pieces to remove them
+        if colour == 'w':
+            pieceList = self.piecesDictionary['b']
+        else:
+            pieceList = self.piecesDictionary['w']
+            
+        # Iterating over pieceList and removing the pieces from the board
+        for piece in pieceList:
+            tempColourBoard[piece.position[0], piece.position[1]].removePiece()
+            
+        # Returning the temporary colour board
+        return tempColourBoard
+        
+        
