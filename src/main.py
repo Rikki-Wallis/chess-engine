@@ -52,12 +52,3 @@ while True:
     if game.hasMoveBeenMade == True:
         currentColour = 'w' if currentColour == 'b' else 'b'
         game.hasMoveBeenMade = False
-                
-        
-
-
-        
-
-
-    
-    

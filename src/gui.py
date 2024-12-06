@@ -163,6 +163,12 @@ class GUI():
         pygame.display.update()
     
     def drawLegalMoves(self, legalMoves):
+        """
+        A method which draws legal moves to the screen.
+        
+        params:
+            legalMoves (List[List[Tile]]) - The current legal moves for a given piece in the current position
+        """
         # Getting the square size
         squareSize = self.getSquareSize()
         
@@ -176,7 +182,7 @@ class GUI():
                 if tile.movable or tile.takeable or tile.check:
                     
                     # Obtaining the transparent surface
-                    transparentSurface = self.drawTransparentRectangle()
+                    transparentSurface = self.drawTransparentRectangle(RED_30_PERCENT_TRANSPARENCY)
                     
                     # Getting the coordinates for the blit
                     x, y = collumnIndex*squareSize, rowIndex*squareSize
@@ -187,13 +193,22 @@ class GUI():
         # Refreshing screen
         pygame.display.update()
                     
-    def drawTransparentRectangle(self):
+    def drawTransparentRectangle(self, colour):
+        """
+        A method which returns a transparent rectangle for a given colour
+        
+        params:
+            colour (tuple(int, int, int, int)) - The RGBA code for the colour we want the square to be
+            
+        return:
+            transparentSurface (Surface) - A surface containing the transparent rectangle
+        """
         # Get the size of each square
         squareSize = self.getSquareSize()
         
         # Create a transparent surface for the rectangle
         transparentSurface = pygame.Surface((squareSize,squareSize), pygame.SRCALPHA)  # Enable alpha channel
-        transparentSurface.fill(RED_30_PERCENT_TRANSPARENCY)  # White color with 50% transparency
+        transparentSurface.fill(colour)  # White color with 50% transparency
         
         # Returning the transparent surface
         return transparentSurface

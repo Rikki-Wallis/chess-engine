@@ -1,35 +1,38 @@
 import pygame
-from board import Board
-from gui import GUI
-from cursor import Cursor
-from tile import Tile
-from piece import Piece
-from rook import Rook
 from constants import *
-import copy
-import math
-from pygame._sdl2 import Window
 
-
-
-
+"""
+A class responsible for handling any event that may occur within the game
+"""
 class Game():
+    
     def __init__(self, gameBoard, gui, cursor):
+        """
+        The game classes init method.
+        
+        params:
+            gameBoard (Board) - The current board which the game will be on
+            gui (GUI) - The current gui handling all the graphical aspects of the game
+            cursor (Cursor) - The current cursor class which handles all mouse related things
+        """
         # Variables which exist to add extra functionality through their own objects
         self.gameBoard = gameBoard
         self.gui = gui
         self.cursor = cursor
         
         # Variables which provide information on the current move
-        self.currentMove = (None, None) # [0] is the selected piece and [1] is the desired location of the piece
-        self.currentLegalMoves = None
-        self.hasMoveBeenMade = False
-        
         self.selectedPiece = None
         self.selectedTile = None
         self.selectedPieceLegalMoves = None
         
     def selectPiece(self, currentColour):
+        """
+        A method which defines what happens when a user selects a piece. Draws legal moves to the screen
+        and updates init variables to reflect the selection
+        
+        params:
+            currentColour (char) - The current colour of who's turn it is
+        """
         # Getting the current tile where the mouse is
         currentTileIndex = self.cursor.mousePositionToTile()
         currentTile = self.gameBoard.board[currentTileIndex[0], currentTileIndex[1]]
@@ -50,6 +53,12 @@ class Game():
             self.gui.drawLegalMoves(self.selectedPieceLegalMoves)
         
     def handleClick(self, currentColour):
+        """
+        A method which handles a click down event. Depending on what the user clicks the outcome will be different.
+        
+        params:
+            currentColour (char) - The current colour of who's turn it is
+        """
         # If no piece has been selected yet, we should select the piece
         if self.selectedPiece == None:
             
@@ -80,7 +89,7 @@ class Game():
                 # Refreshing screen
                 pygame.display.update()
             
-            elif destinationTile.getPiece().colour == currentColour:
+            elif not destinationTile.isEmpty() and destinationTile.getPiece().colour == currentColour:
                 self.selectPiece(currentColour)
             
             # Otherwise an invalid tile has been pressed and we should reset the self vars
@@ -91,55 +100,6 @@ class Game():
                 # Redrawing board and pieces
                 self.gui.drawBoard()
                 self.gui.drawPieces(self.gameBoard.board)
-                
-    def playMove(self, event, colour):
-        # If the event is a mouse button down we should check if there is a piece there
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            
-            # Getting the correct colour pieces so that the program knows which colour we are
-            colourBoard = self.gameBoard.getTemporaryColourBoard(colour)
-            
-            # Getting the current tile where the cursor is
-            startTileIndex = self.cursor.mousePositionToTile()
-            startTile = colourBoard[startTileIndex[0], startTileIndex[1]]
-            
-            # If the tile is not empty we should get the piece at the current tile
-            if not startTile.isEmpty():
-                piece = startTile.getPiece()
-                
-                # Getting the legal moves for the piece in the current position
-                legalMoves = piece.getMoves(self.gameBoard.board)
-                
-                print('fired')
-                
-                # Drawing the legal moves to the screen
-                self.gui.drawLegalMoves(legalMoves)
-                
-        # What should be done when the mouse is released
-        if event.type == pygame.MOUSEBUTTONUP:
-            
-            # Getting the current tile where the cursor is
-            endTileIndex = self.cursor.mousePositionToTile()
-            endTile = self.gameBoard.board[endTileIndex[0], endTileIndex[1]]
-            
-            # If the endTile is a legalMove
-            if legalMoves[endTileIndex[0], endTileIndex[1]].isValid():
-                # Remove the piece from the current tile and add it to the new tile
-                piece = startTile.removePiece()
-                endTile.addPiece(piece)
-                
-                # Redrawing board
-                self.gui.drawBoard()
-                self.gui.drawPieces(self.gameBoard.board)
-                
-                # Refreshing screen
-                pygame.display.update()
-                
-                # Returning False to break out of loop
-                return False
-            
-        # Will keep the loop going by returning true
-        return True
                 
                     
                     

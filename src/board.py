@@ -1,4 +1,3 @@
-import copy
 from rook import Rook
 from tile import Tile
 import numpy as np
@@ -43,7 +42,7 @@ class Board():
         self.board[0,0].addPiece(bARook)
         self.board[0,7].addPiece(bHRook)
         
-        self.board[6,3].addPiece(wARook)
+        self.board[7,0].addPiece(wARook)
         self.board[7,7].addPiece(wHRook)
         
         # Adding the piece lists to the dictionary
@@ -52,21 +51,5 @@ class Board():
             'b' : blackPieceList
         }
         
-    def getTemporaryColourBoard(self, colour):
-        # Getting a deepcopy of the current board
-        tempColourBoard = copy.deepcopy(self.board)
-        
-        # Getting the opposite colour pieces to remove them
-        if colour == 'w':
-            pieceList = self.piecesDictionary['b']
-        else:
-            pieceList = self.piecesDictionary['w']
-            
-        # Iterating over pieceList and removing the pieces from the board
-        for piece in pieceList:
-            tempColourBoard[piece.position[0], piece.position[1]].removePiece()
-            
-        # Returning the temporary colour board
-        return tempColourBoard
         
         
