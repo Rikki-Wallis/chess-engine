@@ -13,7 +13,7 @@ class Piece(ABC):
         name (string) - The name of the piece
     """
     def __init__(self, colour, name):
-        self.color = colour
+        self.colour = colour
         self.name = name
         self.position = None
         self.type = None
@@ -22,12 +22,11 @@ class Piece(ABC):
     Abstract method which when implemented will return
     what moves the piece can make.
     params:
-        position (tuple(int, int)) - The current position of the piece
         board (List[List]) - The board on which the game is being played on
     returns:
         returns an array of all the available tiles the piece can move too
     """
     @abstractmethod
-    def getMoves(self, position, board):
+    def getMoves(self, board):
         pass
     
