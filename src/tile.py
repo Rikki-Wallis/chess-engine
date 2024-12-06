@@ -16,7 +16,7 @@ class Tile():
         self.contains = None
         self.movable = False
         self.check = False
-        self.takable = False
+        self.takeable = False
     
     """
     A method that returns true if the tile is empty and false if it contains a piece.
@@ -47,6 +47,8 @@ class Tile():
     def addPiece(self, piece):
         # Adding piece to tile
         self.contains = piece
+        # Changing the location of the piece
+        piece.position = self.indexCoordinate
     
     """
     A method which removes the current piece on the tile and returns it.
@@ -82,8 +84,14 @@ class Tile():
     A method used for allowing the tile to be used for piece moves. This method is only
     used on temporary variables and never the original board itself.
     """
-    def setTakable(self):
-        self.takable = True
+    def setTakeable(self):
+        self.takeable = True
+        
+    def isValid(self):
+        if self.takeable or self.check or self.movable:
+            return True
+    
+        return False
         
         
     
