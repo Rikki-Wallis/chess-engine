@@ -5,6 +5,7 @@ File to save all the constants for the chess game
 BIEGE = (240, 217, 181)
 BROWN = (181, 136, 99)
 BOARD_SIZE = 8
+RED_30_PERCENT_TRANSPARENCY = (255, 0, 0, 77)
 
 # Piece Types
 BLACK_PAWN = "Black Pawn"
