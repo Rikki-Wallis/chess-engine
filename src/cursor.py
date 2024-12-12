@@ -43,4 +43,13 @@ class Cursor():
         
         # Returning the index of the tile
         return (rowIndex, collumnIndex)
+    
+    def mousePositionToPiece(self, board):
+        # Getting the tile index
+        tileIndex = self.mousePositionToTile()
         
+        # Getting the tile
+        tile = board[tileIndex[0]][tileIndex[1]]
+        
+        # Returning the piece on the tile
+        return tile.getPiece()
