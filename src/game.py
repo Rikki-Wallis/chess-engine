@@ -24,6 +24,7 @@ class Game():
         self.selectedPiece = None
         self.selectedTile = None
         self.selectedPieceLegalMoves = None
+        self.hasMoveBeenMade = False
         
     def selectPiece(self, currentColour):
         """
@@ -45,7 +46,8 @@ class Game():
             self.selectedTile = currentTile
             
             # Obtaining the legal moves
-            self.selectedPieceLegalMoves = self.selectedPiece.getMoves(self.gameBoard.board)
+            legalMoves = self.selectedPiece.getMoves(self.gameBoard.board)
+            self.selectedPieceLegalMoves = self.selectedPiece.removeIllegalMoves(self.gameBoard.board, legalMoves, self.selectedPiece.king)
             
             # Drawing the moves to the screen
             self.gui.drawBoard()
@@ -72,10 +74,42 @@ class Game():
             destinationTile = self.gameBoard.board[destinationTileIndex[0], destinationTileIndex[1]]
             
             # Seeing if the destination tile may be movable
-            if self.selectedPieceLegalMoves[destinationTileIndex[0], destinationTileIndex[1]].isValid():
+            if destinationTileIndex in self.selectedPieceLegalMoves:
                 # Remove the piece from the current tile and add it to the new tile
                 piece = self.selectedTile.removePiece()
                 destinationTile.addPiece(piece)
+                
+                # Updating whether the piece has moved
+                piece.moved = True
+                
+                # Resetting current move
+                self.selectedPiece = None
+                self.selectedTile = None
+                self.hasMoveBeenMade = True
+                
+                # Redrawing board
+                self.gui.drawBoard()
+                self.gui.drawPieces(self.gameBoard.board)
+                
+                # Refreshing screen
+                pygame.display.update()
+                
+            elif destinationTile.castle:
+                # Remove the piece from the current tile and add it to the new tile
+                piece = self.selectedTile.removePiece()
+                destinationTile.addPiece(piece)
+                
+                # Removing and placing the rook next to the king
+                if destinationTileIndex[1] > 3:
+                    rook = self.gameBoard.board[self.selectedPiece.position[0], 7].removePiece()
+                    self.gameBoard.board[self.selectedPiece.position[0], 5].addPiece(rook)
+                else:
+                    rook = self.gameBoard.board[self.selectedPiece.position[0], 0].removePiece()
+                    self.gameBoard.board[self.selectedPiece.position[0], 3].addPiece(rook)
+                    
+                # Updating whether the piece has moved
+                piece.moved = True
+                rook.moved = True
                 
                 # Resetting current move
                 self.selectedPiece = None
@@ -101,7 +135,48 @@ class Game():
                 self.gui.drawBoard()
                 self.gui.drawPieces(self.gameBoard.board)
                 
-                    
-                    
-            
+    def isKingInCheck(self, colour):
+        # Getting the king piece
+        king = self.gameBoard.getKing(colour)
         
+        # Returning whether or not the king is in check
+        return king.isUnderAttack(king.position, self.gameBoard.board)
+    
+    def isKingInCheckMate(self, colour):
+        # If the king is not in check return false
+        if not self.isKingInCheck(colour):
+            return False
+        
+        # Otherwise the king is in check and we should check if the king can move anywhere
+        if not len(self.gameBoard.getKing(colour).getMoves(self.gameBoard.board)) == 0:
+            return False
+        
+        # If the king cant move anywhere we should check if a piece can block
+        for piece in self.gameBoard.piecesDictionary[colour]:
+            
+            # Getting the pieces unfiltered moves
+            unfilteredMoves = piece.getMoves(self.gameBoard.board)
+            
+            # Iterating over each move the piece can make to see if it can stop the check
+            for move in piece.removeIllegalMoves(self.gameBoard.board, unfilteredMoves, piece.king):
+                
+                # Simulate the move
+                originalTile = self.gameBoard.board[piece.position[0],piece.position[1]]
+                destinationTile = self.gameBoard.board[move[0], move[1]]
+            
+                # Temporarily move the piece
+                originalTilePiece = originalTile.removePiece()
+                destinationTilePiece = destinationTile.removePiece()
+                destinationTile.addPiece(originalTilePiece)
+                
+                # If there is no longer a check return false
+                if not self.isKingInCheck(colour):
+                    originalTile.addPiece(originalTilePiece)
+                    destinationTile.addPiece(destinationTilePiece)
+                    return False
+                
+                originalTile.addPiece(originalTilePiece)
+                destinationTile.addPiece(destinationTilePiece)
+                
+        return True
+                    
