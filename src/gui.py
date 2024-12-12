@@ -1,9 +1,7 @@
 import pygame
-from pygame._sdl2 import Window
 
 from constants import *
 import math
-from tile import Tile
 
 """
 Class which handles all the GUI elements of the chess program.
@@ -118,13 +116,14 @@ class GUI():
         # Refreshing screen
         pygame.display.update()
     
-    def drawPieces(self, board):
+    def drawPieces(self, board, discludePiece = None):
         """
         A method similar to drawBoard however this method specifically focuses on drawing
         the piece assets to the screen corresponding to where the pieces are on the board.
         
         params:
             board (List[List[Tile]]) - The current board that the game is being played on
+            discludePiece (Piece) | None - A piece we do not want to draw on the board
         """
         # Getting the square size
         squareSize = self.getSquareSize()
@@ -135,14 +134,14 @@ class GUI():
             # Iterating over each tile in the row
             for collumnIndex, tile in enumerate(row):
                 
-                # If the tile is empty we do not have to draw anything
-                if tile.isEmpty():
-                    pass
-                
-                # Otherwise we should draw the piece
-                else:
+                # If the tile is not empty we should draw the piece to the screen
+                if not tile.isEmpty():
                     # Getting the piece on the tile
                     piece = tile.getPiece()
+                    
+                    # If piece the same as param we wont draw the piece
+                    if piece == discludePiece:
+                        continue
                     
                     # Getting top left position of the square
                     topLeftx = collumnIndex * squareSize
@@ -167,29 +166,22 @@ class GUI():
         A method which draws legal moves to the screen.
         
         params:
-            legalMoves (List[List[Tile]]) - The current legal moves for a given piece in the current position
+            legalMoves (List[tuple(int, int)]) - The current legal moves for a given piece in the current position
         """
         # Getting the square size
         squareSize = self.getSquareSize()
         
-        # Iterating over each row
-        for rowIndex, row in enumerate(legalMoves):
+        # Iterating over each legal move
+        for coord in legalMoves:
+            #Obtaining the transparent surface
+            transparentSurface = self.drawTransparentRectangle(RED_30_PERCENT_TRANSPARENCY)
             
-            # Iterating over each tile
-            for collumnIndex, tile in enumerate(row):
-                
-                # If the tile should be displayed colour in the square
-                if tile.movable or tile.takeable or tile.check:
-                    
-                    # Obtaining the transparent surface
-                    transparentSurface = self.drawTransparentRectangle(RED_30_PERCENT_TRANSPARENCY)
-                    
-                    # Getting the coordinates for the blit
-                    x, y = collumnIndex*squareSize, rowIndex*squareSize
-                    
-                    # Blitting the square onto the screen
-                    self.screen.blit(transparentSurface, (x,y))
-                    
+            # Getting the coordinates for the blit
+            x, y = coord[1]*squareSize, coord[0]*squareSize
+            
+            # Blitting the square onto the screen
+            self.screen.blit(transparentSurface, (x,y))
+        
         # Refreshing screen
         pygame.display.update()
                     
@@ -208,8 +200,23 @@ class GUI():
         
         # Create a transparent surface for the rectangle
         transparentSurface = pygame.Surface((squareSize,squareSize), pygame.SRCALPHA)  # Enable alpha channel
-        transparentSurface.fill(colour)  # White color with 50% transparency
+        transparentSurface.fill(colour)
         
         # Returning the transparent surface
         return transparentSurface
+    
+    def drawPieceToCursor(self, piece, cursor):
+        # Getting the mouse position
+        mousex,mousey = cursor.getMousePosition()
+
+        # Getting the size of the asset
+        asset = self.assetList[piece.type]
+        pieceWidth, pieceHeight = asset.get_size()
+        
+        # Centering the object
+        x, y = mousex-pieceWidth//2, mousey-pieceHeight//2
+
+        # Blitting the piece to the screen
+        self.screen.blit(asset, (x, y))
+        
         
