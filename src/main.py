@@ -1,15 +1,11 @@
+import time
 import pygame
 from board import Board
 from gui import GUI
 from cursor import Cursor
-from tile import Tile
-from piece import Piece
-from rook import Rook
 from constants import *
-import copy
-import math
-from pygame._sdl2 import Window
 from game import Game
+from arbiter import Arbiter
 
 # Initialising the game board
 gameBoard = Board()
@@ -32,7 +28,11 @@ currentColour = 'w'
 gui.drawBoard()
 gui.drawPieces(gameBoard.board)
     
-while True:
+arbiter = Arbiter(gameBoard)
+
+running = True
+
+while running:
     clock.tick(60)
 
     # Event Handler
@@ -44,11 +44,37 @@ while True:
         
         # If the mouse button is pressed
         if event.type == pygame.MOUSEBUTTONDOWN:
+            # Getting the piece on the tile
+            piece = cursor.mousePositionToPiece(gameBoard.board)
+            
+            # Handling the click
             game.handleClick(currentColour)
+            
             # # While the mouse button is pressed down
             # while pygame.mouse.get_pressed()[0]:
+            #     # gui.drawBoard()
+            #     # gui.drawPieces(gameBoard.board, piece)
+            #     # gui.drawLegalMoves(piece.getMoves(gameBoard.board))
+            #     gui.drawPieceToCursor(piece, cursor)
+
         
-    # If a move has been made switch the current colours turn
+    # If a move has been made switch the current colours turn and check if the king is in checkmate
     if game.hasMoveBeenMade == True:
+        # Changing current colour
         currentColour = 'w' if currentColour == 'b' else 'b'
+        
+        # Resseting move counter
         game.hasMoveBeenMade = False
+        
+        # Checking if the king is in check
+        if game.isKingInCheck(currentColour):
+            
+            # If the king is in check check if they are in checkmate
+            if game.isKingInCheckMate(currentColour):
+                
+                # Printing the winner
+                winnerColour = 'w' if currentColour == 'b' else 'b' 
+                print(f'The winner is {winnerColour}')
+                time.sleep(10)
+                running = False
+            
