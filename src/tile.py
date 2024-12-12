@@ -17,6 +17,7 @@ class Tile():
         self.movable = False
         self.check = False
         self.takeable = False
+        self.castle = False
     
     def isEmpty(self):
         """
@@ -25,8 +26,9 @@ class Tile():
         return:
             empty (bool) - True or False whether the tile is empty
         """
-        return True if self.contains == None else False
-
+        # return True if self.contains == None else False
+        return self.contains is None
+        
     def getPiece(self):
         """
         A method that gets the piece on the current tile and returns it.
@@ -47,8 +49,9 @@ class Tile():
         """
         # Adding piece to tile
         self.contains = piece
-        # Changing the location of the piece
-        piece.position = self.indexCoordinate
+        if piece != None:
+            # Changing the location of the piece
+            piece.position = self.indexCoordinate
     
     def removePiece(self):
         """
@@ -87,6 +90,9 @@ class Tile():
         """
         self.takeable = True
         
+    def setCastle(self):
+        self.castle = True
+        
     def isValid(self):
         """
         A method used to check if a tile is contained in a legal move
@@ -98,3 +104,5 @@ class Tile():
             return True
         else:
             return False
+        
+        
