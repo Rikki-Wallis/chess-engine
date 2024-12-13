@@ -5,7 +5,6 @@ from gui import GUI
 from cursor import Cursor
 from constants import *
 from game import Game
-from arbiter import Arbiter
 
 # Initialising the game board
 gameBoard = Board()
@@ -27,8 +26,6 @@ currentColour = 'w'
 # Drawing the board to the screen
 gui.drawBoard()
 gui.drawPieces(gameBoard.board)
-    
-arbiter = Arbiter(gameBoard)
 
 running = True
 
